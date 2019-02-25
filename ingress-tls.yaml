@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: airflow-ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "airflow-ip"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/ingress.allow-http: "false"
+    ingress.kubernetes.io/hsts-max-age: "0"
+spec:
+  tls:
+  - secretName: tls
+  backend:
+    serviceName: airflow-svc
+    servicePort: 8080
