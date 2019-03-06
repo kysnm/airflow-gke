@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: kysnm/docker-airflow:1.10.2
+        image: kysnm/docker-airflow:latest
         readinessProbe:
           failureThreshold: 3
           httpGet:
