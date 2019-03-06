@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        args:
+        - mysqld
+        - --character-set-server=utf8
+        - --collation-server=utf8_unicode_ci
+        - --explicit_defaults_for_timestamp
+        - --ignore-db-dir=lost+found
+        env:
+        - name: MYSQL_DATABASE
+          value: airflow
+        - name: MYSQL_PASSWORD
+          value: airflow
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        - name: MYSQL_USER
+          value: airflow
+        ports:
+        - containerPort: 3306
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-data
+      restartPolicy: Always
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
