@@ -27,6 +27,14 @@ gcloud container clusters get-credentials <cluster_name>
 gcloud compute addresses create airflow-ip --global
 ```
 
+- Deploy MySQL to the cluster
+```sh
+kubectl create \
+    -f mysql-pv.yaml \
+    -f mysql-deployment.yaml \
+    -f mysql-service.yaml
+```
+
 - Deploy airflow to the cluster
 ```sh
 kubectl create \
