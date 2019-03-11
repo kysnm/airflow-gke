@@ -35,6 +35,14 @@ kubectl create \
     -f mysql-service.yaml
 ```
 
+- Deploy Redis to the cluster
+```sh
+kubectl create \
+    -f redis-pv.yaml \
+    -f redis-deployment.yaml \
+    -f redis-service.yaml
+```
+
 - Deploy airflow to the cluster
 ```sh
 kubectl create \

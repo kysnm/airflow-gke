@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: redis-deployment
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        run: airflow-redis
+    spec:
+      containers:
+      - image: redis:5.0.3
+        name: redis-deployment
+        command:
+        - redis-server
+        - --
+        - save
+        - "60"
+        - "1"
+        ports:
+        - containerPort: 6379
+        resources: {}
+        volumeMounts:
+        - mountPath: /data
+          name: redis-data
+      restartPolicy: Always
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-pv-claim
