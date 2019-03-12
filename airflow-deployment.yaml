@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: airflow
+  name: airflow-webserver
 spec:
   replicas: 1
   template:
@@ -33,7 +33,7 @@ spec:
         - name: AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX
           value: 'True'
         - name: EXECUTOR
-          value: Local
+          value: Celery
         - name: MYSQL_HOST
           value: mysql
         - name: MYSQL_PORT
@@ -44,3 +44,83 @@ spec:
           value: airflow
         - name: MYSQL_DB
           value: airflow
+        - name: REDIS_HOST
+          value: redis-deployment
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: airflow-scheduler
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: airflow
+        role: scheduler
+        tier: backend
+    spec:
+      containers:
+      - name: scheduler
+        image: kysnm/docker-airflow:1.10.2
+        imagePullPolicy: Always
+        args:
+        - scheduler
+        env:
+        - name: LOAD_EX
+          value: 'y'
+        - name: AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX
+          value: 'True'
+        - name: EXECUTOR
+          value: Celery
+        - name: MYSQL_HOST
+          value: mysql
+        - name: MYSQL_PORT
+          value: '3306'
+        - name: MYSQL_USER
+          value: airflow
+        - name: MYSQL_PASSWORD
+          value: airflow
+        - name: MYSQL_DB
+          value: airflow
+        - name: REDIS_HOST
+          value: redis-deployment
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: airflow-worker
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: airflow
+        role: worker
+        tier: backend
+    spec:
+      containers:
+      - name: worker
+        image: kysnm/docker-airflow:1.10.2
+        imagePullPolicy: Always
+        args:
+        - worker
+        env:
+        - name: LOAD_EX
+          value: 'y'
+        - name: AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX
+          value: 'True'
+        - name: EXECUTOR
+          value: Celery
+        - name: MYSQL_HOST
+          value: mysql
+        - name: MYSQL_PORT
+          value: '3306'
+        - name: MYSQL_USER
+          value: airflow
+        - name: MYSQL_PASSWORD
+          value: airflow
+        - name: MYSQL_DB
+          value: airflow
+        - name: REDIS_HOST
+          value: redis-deployment
